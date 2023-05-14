@@ -3,6 +3,7 @@ package com.wileyedge;
 import java.util.Scanner;
 import com.wileyedge.customer.Customer;
 import com.wileyedge.customer.Customers;
+import com.wileyedge.utilities.InputUtilities;
 
 
 public class MainUI {
@@ -26,7 +27,8 @@ public class MainUI {
             System.out.println("6 - Show All Customers");
             System.out.println("7 - Search Customers by Name");
             System.out.println("8 - Exit");
-//            System.out.println("9 - Search Customer by Id :");
+            System.out.println("9 - Withdraw bank balance by customer ID");
+            System.out.println("9 - Deposit to Customer Bank Account by customer ID");
             
             String option = scanner.nextLine();
             
@@ -60,7 +62,25 @@ public class MainUI {
             	break;
             case "8": // Exit
             	System.out.println("Good Bye!");
+            	scanner.close();
             	readyToExit = true;
+            	break;
+            case "9": // Withdraw
+            	// Get customer Id as input
+            	String promptGetId = "Enter customer Id for bank account withdrawal : ";
+            	int min = 100;
+            	int max = min + Customers.getCount();
+            	int id = InputUtilities.getInputAsInteger(promptGetId, min, max);
+            	
+            	// Get amount to widthdraw
+            	String promptGetAmount = "Enter Amount to withdrawal : ";
+            	double minAmount = 1.00;
+            	double maxAmount = 10000;
+            	double amount = InputUtilities.getInputAsDouble(promptGetAmount, minAmount, maxAmount); 	
+            	customers.withdrawal(id, amount);
+            	break;
+            case "10": // Deposit
+            	System.out.println("-------Deposit----TO BE COMPLETED----");
             	break;
             default:
             		System.out.println("Option not valid - try again !");

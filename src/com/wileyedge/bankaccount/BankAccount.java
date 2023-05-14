@@ -1,5 +1,9 @@
 package com.wileyedge.bankaccount;
 
+import com.wileyedge.customer.Customer;
+import com.wileyedge.customer.Customers;
+import com.wileyedge.exceptions.InsufficientBalanceException;
+
 public class BankAccount {
 	private long accntNum;
 	private long bsbCode;
@@ -56,32 +60,27 @@ public class BankAccount {
 		this.accntOpeningDate = accntOpeningDate;
 	}
 	
-	public void withdraw(double amount) {
+	public void withdraw(double amount){
 	    try {
-	        if (amount <= 0) {
-	            throw new IllegalArgumentException("Withdrawal amount must be greater than 0");
-	        }
 	        if (amount > this.accntBal) {
-	            throw new IllegalArgumentException("Withdrawal amount exceeds account balance");
+	            throw new InsufficientBalanceException("Insufficient balance in the account to withdraw.");
 	        }
 	        this.accntBal -= amount;
-	        System.out.println("Your updated bank balance after withdrawal is: " + this.accntBal);
-	    } catch (IllegalArgumentException e) {
-	        System.out.println("Error: " + e.getMessage());
-	    }
-	}
-	
-	public void deposit(double amount) {
-	    try {
-	        if(amount <= 0) {
-	            throw new IllegalArgumentException("Deposit amount must be positive");
-	        }
-	        this.accntBal += amount;
-	        System.out.println("Your updated bank balance after deposit is : "+ this.accntBal);
-	    } catch (IllegalArgumentException e) {
+	        System.out.println("Your updated bank balance after withdrawal is : "+ this.accntBal);
+	    } catch (InsufficientBalanceException e) {
 	        System.out.println(e.getMessage());
+	    } catch (Exception e) {
+	        System.out.println("Error occurred while withdrawing from the account. Please try again.");
 	    }
 	}
+
+
+	
+	
+	
+	
+	
+	
 
 
 	@Override

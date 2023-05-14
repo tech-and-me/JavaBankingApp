@@ -88,7 +88,7 @@ public class Customers {
     	String openingDate = InputUtilities.getInputAsDate(promptGetOpeningDate);
 
     	//Get customer object from customer id
-    	Customer customer = searchCustomerById(customerId);
+    	Customer customer = getCustomerById(customerId);
     	
     	//Invoke method to create bank account
     	this.assignBankAccountForCustomer(customer,accountNum,bsb,bankName,bankBal,openingDate);
@@ -96,7 +96,7 @@ public class Customers {
     }
     
     public void assignBankAccountForCustomer(int customerId) {
-    	Customer customer = searchCustomerById(customerId);
+    	Customer customer = getCustomerById(customerId);
     	if( customer == null) {
     		System.out.println("Invalid customer ID.");
             return;
@@ -114,6 +114,16 @@ public class Customers {
         System.out.println("Bank account created successfully!");
     }
     
+    public void withdrawal(int customerId, double amount) {
+        Customer customer = getCustomerById(customerId);
+        if (customer == null) {
+            System.out.println("Customer with ID " + customerId + " not found.");
+            return;
+        }
+        BankAccount account = customer.getBankAccount();
+        account.withdraw(amount);
+    }
+
 	public void displayCustomers() {
 	    displayCustomers(this.customers);
 	}
@@ -144,7 +154,7 @@ public class Customers {
 	    return matchingCustomers;
 	}
 	
-	public Customer searchCustomerById(int customerId) {
+	public Customer getCustomerById(int customerId) {
 	    for (Customer customer : customers) {
 	        if (customer != null && customer.getCustId() == customerId) {
 	            return customer;
