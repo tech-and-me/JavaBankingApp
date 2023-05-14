@@ -2,12 +2,15 @@ package com.wileyedge.customer;
 
 import java.util.Scanner;
 
+import com.wileyedge.bankaccount.BankAccount;
+
 public class Customer {
 	private int custId;
 	private String custName;
 	private int custAge;
 	private int custMobNum;
 	private String custPassportNum;
+	private BankAccount bankAccount;
 	
 	private static int lastCustId = 100;
 	
@@ -74,6 +77,14 @@ public class Customer {
 		Customer.lastCustId = lastCustId;
 	}
 	
+	public BankAccount getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setCustomerBankAccount(BankAccount bankAccount) {
+        this.bankAccount = bankAccount;
+    }
+	
 	
 	public Customer CreateNewCustomerData(Scanner scanner, Customers customers) {	
 		// get customer details from user input	
@@ -102,16 +113,19 @@ public class Customer {
 		return customer;
 	}
 	
-	
-	
-	
-	
-	
-
 	@Override
 	public String toString() {
+		String bankName = "N/A";
+		String accountNumber = "N/A";
+		if(this.bankAccount == null) {
+			bankName = "N/A";
+			accountNumber = "N/A";
+		}else {
+			bankName = this.bankAccount.getBankName();
+			accountNumber = String.valueOf(this.bankAccount.getAccntNum());
+		}
 		return "ID: " + this.custId + " | " + "NAME: " + this.custName + " | " 
-				+ "AGE: " + this.custAge 	+ " | " + "MOBILE: " + this.custMobNum;
+				+ "AGE: " + this.custAge 	+ " | " + "MOBILE: " + this.custMobNum + " | " + "Bank Name: " + bankName + " | " + "Bank Account Number: " + accountNumber;
 	}
 	
 	

@@ -26,6 +26,7 @@ public class MainUI {
             System.out.println("6 - Show All Customers");
             System.out.println("7 - Search Customers by Name");
             System.out.println("8 - Exit");
+//            System.out.println("9 - Search Customer by Id :");
             
             String option = scanner.nextLine();
             
@@ -34,15 +35,18 @@ public class MainUI {
             	customer.CreateNewCustomerData(scanner, customers);
             	break;
             case "2":// Assign a Bank Account to a Customer
-            	System.out.println("Assign a Bank Account to a Customer ---Under development---Stay tune!");
+            	System.out.println("Enter customer id you want to assign bank account : ");
+            	int customerId = scanner.nextInt();
+            	scanner.nextLine();
+            	customers.assignBankAccountForCustomer(customerId);
             	break;
-            case "3": // Display balance or interest earned of a customer
+            case "3": // Display balance or interest earned of a customer   -- TO BE COMPLETED
             	System.out.println("Display balance or interest earned of a customer ---Under development---Stay tune!");
             	break;
-            case "4": // Sort customer data
+            case "4": // Sort customer data  -- TO BE COMPLETED
             	System.out.println("Sort customer data ---Under development---Stay tune!");
             	break;
-            case "5": // Persist Customer Data
+            case "5": // Persist Customer Data -- TO BE COMPLETED
             	System.out.println("Persist Customer Data ---Under development---Stay tune!");
             	break;
             case "6": // Show all customers            
@@ -51,7 +55,6 @@ public class MainUI {
             case "7": // Search Customers by Name
             	System.out.println("Enter customer name you want to search : ");
             	String searchName = scanner.nextLine();
-            	int size = Customers.getCount();
             	Customer[] matchingCustomers = customers.searchCustomersByName(searchName);
             	customers.displayCustomers(matchingCustomers);			
             	break;
@@ -59,6 +62,13 @@ public class MainUI {
             	System.out.println("Good Bye!");
             	readyToExit = true;
             	break;
+//            case "9": // Search Customers by Name
+//            	System.out.println("Enter customer id you want to search : ");
+//            	int searchId = scanner.nextInt();
+//            	scanner.nextLine();
+//            	Customer customerFound = customers.searchCustomerById(searchId);
+//            	System.out.println(customerFound);	
+//            	break;
             default:
             		System.out.println("Option not valid - try again !");
             }

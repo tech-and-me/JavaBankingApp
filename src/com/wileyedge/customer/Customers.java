@@ -3,6 +3,9 @@ package com.wileyedge.customer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
+
+import com.wileyedge.bankaccount.BankAccount;
 
 
 public class Customers {
@@ -48,6 +51,55 @@ public class Customers {
 		return count;
 	}
 	
+
+    public boolean customerHasNoBankAccount(Customer customer) {
+    	return customer.getBankAccount() == null;
+    }
+    
+    
+    public void getBankAccountDetails(int customerId) {
+    	Scanner scanner = new Scanner(System.in);
+    	System.out.println("Enter account number :");
+    	long accountNum = scanner.nextLong();
+    	scanner.nextLine();
+    	System.out.println("Enter BSB Code :");
+    	long bsb = scanner.nextLong();
+    	scanner.nextLine();
+    	System.out.println("Enter bank name :");
+    	String bankName = scanner.nextLine();
+    	System.out.println("Enter bank balance :");
+    	double bankBal = scanner.nextDouble();
+    	scanner.nextLine();
+    	System.out.println("Enter opening date DD/MM/YYY : ");
+    	String openingDate = scanner.nextLine();
+    	
+    	//Get customer object from customer id
+    	Customer customer = searchCustomerById(customerId);
+    	
+    	//Invoke method to create bank account
+    	this.assignBankAccountForCustomer(customer,accountNum,bsb,bankName,bankBal,openingDate);
+    		
+    }
+    
+    public void assignBankAccountForCustomer(int customerId) {
+    	Customer customer = searchCustomerById(customerId);
+    	if( customer == null) {
+    		System.out.println("Invalid customer ID.");
+            return;
+    	}else if(!customerHasNoBankAccount(customer)) {
+    		System.out.println("This customer already has a bank account linked.");
+            return;
+    	}
+  	
+    	getBankAccountDetails(customerId);
+    }
+    
+    public void assignBankAccountForCustomer(Customer customer,long accntNum, long bsbCode, String accntName, double accntBal, String accntOpeningDate) {
+        BankAccount bankAccount = new BankAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
+        customer.setCustomerBankAccount(bankAccount);
+        System.out.println("Bank account created successfully!");
+    }
+    
 	public void displayCustomers() {
 	    displayCustomers(this.customers);
 	}
@@ -77,5 +129,14 @@ public class Customers {
 	    
 	    return matchingCustomers;
 	}
-
+	
+	public Customer searchCustomerById(int customerId) {
+	    for (Customer customer : customers) {
+	        if (customer != null && customer.getCustId() == customerId) {
+	            return customer;
+	        }
+	    }
+	    return null;
+	}
+	
 }
