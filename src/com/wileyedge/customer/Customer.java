@@ -1,8 +1,7 @@
 package com.wileyedge.customer;
 
-import java.util.Scanner;
-
 import com.wileyedge.bankaccount.BankAccount;
+import com.wileyedge.utilities.InputUtilities;
 
 public class Customer {
 	private int custId;
@@ -86,18 +85,35 @@ public class Customer {
     }
 	
 	
-	public Customer CreateNewCustomerData(Scanner scanner, Customers customers) {	
-		// get customer details from user input	
-		System.out.println("Enter customer name :");
-		String name = scanner.nextLine();
-		System.out.println("Enter customer age :");
-		int age = scanner.nextInt();
-		scanner.nextLine();
-		System.out.println("Enter customer mobile number :");
-		int mobNum = scanner.nextInt();
-		scanner.nextLine();
-		System.out.println("Enter customer passport number :");
-		String passportNum = scanner.nextLine();
+	public Customer CreateNewCustomerData(Customers customers) {	
+		String name;
+		int age = 0;
+		int mobNum = 0;
+		String passportNum;
+		
+		// get customer name
+		String promptGetCustomerInput = "Enter customer name :";
+		int minNameLength = 2;
+		int maxNameLenght = 20;
+		name = InputUtilities.getInputAsString(promptGetCustomerInput, minNameLength, maxNameLenght);
+		
+		//Get customer age
+		String promptGetAgeInput = "Enter customer age : ";
+		int minAge = 18;
+		int maxAge = 100;
+		age = InputUtilities.getInputAsInteger(promptGetAgeInput, minAge, maxAge);
+		
+		//Get customer mobile phone number
+		String promptGetMobInput = "Enter customer mobile number :";
+		int minPhoneNum = 100000000;
+		int maxPhoneNum = 500000000;
+		mobNum = InputUtilities.getInputAsInteger(promptGetMobInput, minPhoneNum, maxPhoneNum);
+		
+		//Get customer passport number
+		String promptGetPassportInput = "Enter customer passport number :";
+		int minPassportNumLength = 5;
+		int maxPassportNumLenght = 15;
+		passportNum = InputUtilities.getInputAsString(promptGetPassportInput, minPassportNumLength, maxPassportNumLenght);
 
 		// Create customer object
 		Customer customer = new Customer(name,age,mobNum,passportNum);

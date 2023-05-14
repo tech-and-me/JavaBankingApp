@@ -32,7 +32,7 @@ public class MainUI {
             
             switch(option) {
             case "1": // Create New Customer Data
-            	customer.CreateNewCustomerData(scanner, customers);
+            	customer.CreateNewCustomerData(customers);
             	break;
             case "2":// Assign a Bank Account to a Customer
             	System.out.println("Enter customer id you want to assign bank account : ");
@@ -62,7 +62,7 @@ public class MainUI {
             	System.out.println("Good Bye!");
             	readyToExit = true;
             	break;
-//            case "9": // Search Customers by Name
+//            case "9": // Search Customers by ID 
 //            	System.out.println("Enter customer id you want to search : ");
 //            	int searchId = scanner.nextInt();
 //            	scanner.nextLine();
