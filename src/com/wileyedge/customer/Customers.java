@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.wileyedge.bankaccount.BankAccount;
+import com.wileyedge.utilities.InputUtilities;
 
 
 public class Customers {
@@ -57,22 +58,35 @@ public class Customers {
     }
     
     
-    public void getBankAccountDetails(int customerId) {
-    	Scanner scanner = new Scanner(System.in);
-    	System.out.println("Enter account number :");
-    	long accountNum = scanner.nextLong();
-    	scanner.nextLine();
-    	System.out.println("Enter BSB Code :");
-    	long bsb = scanner.nextLong();
-    	scanner.nextLine();
-    	System.out.println("Enter bank name :");
-    	String bankName = scanner.nextLine();
-    	System.out.println("Enter bank balance :");
-    	double bankBal = scanner.nextDouble();
-    	scanner.nextLine();
-    	System.out.println("Enter opening date DD/MM/YYY : ");
-    	String openingDate = scanner.nextLine();
+    public void getBankAccountDetails(int customerId) {    	
+    	//Get customer account number
+    	String promptGetAccntNum = "Enter account number :";
+    	long minAccNum = 100000;
+    	long maxAccNum = 1000000000;
+    	long accountNum = InputUtilities.getInputAsLong(promptGetAccntNum, minAccNum, maxAccNum);
     	
+    	//Get customer account BSB Code
+    	String promptGetBsbCode = "Enter BSB Code :";
+    	long minBsbNum = 100000;
+    	long maxBsbNum = 900000;
+    	long bsb = InputUtilities.getInputAsLong(promptGetBsbCode, minBsbNum, maxBsbNum);
+    	
+    	//Get customer bank name
+    	String promptGetBankName = "Enter bank name :";
+    	int minBankName = 3;
+    	int maxBankName = 20;
+    	String bankName = InputUtilities.getInputAsString(promptGetBankName, minBankName, maxBankName);
+    	
+    	//Get customer account number
+    	String promptGetBankBal = "Enter bank balance : ";
+    	double minAccBal = 0.00;
+    	double maxAccBal = 900000000.00;
+    	double bankBal = InputUtilities.getInputAsDouble(promptGetBankBal, minAccBal, maxAccBal);
+    	
+    	//Get Opening Date
+    	String promptGetOpeningDate = "Enter opening date DD/MM/YYYY : ";
+    	String openingDate = InputUtilities.getInputAsDate(promptGetOpeningDate);
+
     	//Get customer object from customer id
     	Customer customer = searchCustomerById(customerId);
     	
@@ -105,7 +119,7 @@ public class Customers {
 	}
 
 	public void displayCustomers(Customer[] customers) {
-	    System.out.println("==========Customers List==========");
+	    System.out.println("\n==========Customers List==========");
 	    if(customers.length == 0) {
 	    	System.out.println("No customers to display");
 	    }else {

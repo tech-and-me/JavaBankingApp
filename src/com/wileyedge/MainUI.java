@@ -62,13 +62,6 @@ public class MainUI {
             	System.out.println("Good Bye!");
             	readyToExit = true;
             	break;
-//            case "9": // Search Customers by ID 
-//            	System.out.println("Enter customer id you want to search : ");
-//            	int searchId = scanner.nextInt();
-//            	scanner.nextLine();
-//            	Customer customerFound = customers.searchCustomerById(searchId);
-//            	System.out.println(customerFound);	
-//            	break;
             default:
             		System.out.println("Option not valid - try again !");
             }
