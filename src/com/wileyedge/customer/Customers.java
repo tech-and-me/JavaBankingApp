@@ -34,6 +34,7 @@ public class Customers implements Serializable{
 	
 	public Customers(Customer[] customers) {
         this.customers = customers;
+        count = customers.length;
     }
 	
 	public void addCustomer(Customer customer) {
@@ -142,17 +143,18 @@ public class Customers implements Serializable{
         account.withdraw(amount);
     }
 
-	
 	public Customer[] searchCustomersByName(String name) {
 	    Customer[] matchingCustomers = new Customer[count];
-	    int matchingCount = 0;
+	    int matchingCount = 0;    
 	    for (int i = 0; i < count; i++) {
-	        if (customers[i].getCustName().equalsIgnoreCase(name)) {
-	            matchingCustomers[matchingCount++] = customers[i];
-	        }
+	    	if(customers[i] != null) {
+	    		if (this.customers[i].getCustName().equalsIgnoreCase(name)) {
+		            matchingCustomers[matchingCount++] = customers[i];
+		        }
+	    	}
 	    }
 	    matchingCustomers = Arrays.copyOfRange(matchingCustomers, 0, matchingCount);	    
-	    
+	    this.displayCustomers(matchingCustomers);
 	    return matchingCustomers;
 	}
 	
@@ -181,7 +183,10 @@ public class Customers implements Serializable{
 	        }
 	    }
 	    for(Customer c:sorted) {
-	    	System.out.println(c);
+	    	if(c != null) {
+	    		System.out.println(c);
+	    	}
+	    	
 	    }
 	}
 	
@@ -236,12 +241,23 @@ public class Customers implements Serializable{
 	        fis = new FileInputStream(filename);
 	        bis = new BufferedInputStream(fis);
 	        ois = new ObjectInputStream(bis);
-	        customers = (Customer[]) ois.readObject();
+	        Object obj = ois.readObject();
+	        if(obj instanceof Customer[]) {
+	        	customers = (Customer[])obj;
+	        }else {
+	        	System.out.println("Obj is not an instance of Customer[]");
+	        }
+	        for(Customer c:customers) {
+	        	if(c!=null) {
+	        		count++;
+	        	}
+	        }
+	        Customer.setLastCustId(100 + count);
 	        System.out.println("Customer data read from file successfully!");
 	    } catch (FileNotFoundException e) {
 	        System.out.println("Error file not found: " + e.getMessage());
 	    } catch (IOException e) {
-	        System.out.println("Error reading customer data from file: " + e.getMessage());
+	        System.out.println("No data to load");
 	    } catch (ClassNotFoundException e) {
 	        System.out.println("Error loading Customer class: " + e.getMessage());
 	    } finally {

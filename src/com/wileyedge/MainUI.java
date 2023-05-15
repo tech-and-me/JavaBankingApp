@@ -77,7 +77,6 @@ public class MainUI {
             	System.out.println("Enter customer name you want to search : ");
             	String searchName = scanner.nextLine();
             	Customer[] matchingCustomers = customers.searchCustomersByName(searchName);
-            	customers.displayCustomers(matchingCustomers);			
             	break;
             case "8": // Exit
             	//Persist Customers Data to file    	
