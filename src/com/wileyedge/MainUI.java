@@ -1,5 +1,11 @@
 package com.wileyedge;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 import com.wileyedge.customer.Customer;
 import com.wileyedge.customer.Customers;
@@ -8,13 +14,26 @@ import com.wileyedge.utilities.InputUtilities;
 
 public class MainUI {
 	public static void main(String[] args) {
-		int initialCustomersListSize = 3;
+		File customersDataFile = new File("C:\\C353\\CustomersDataFile.txt");
 		Customer customer = new Customer();
-		Customers customers = new Customers(initialCustomersListSize);
-		Scanner scanner = new Scanner(System.in);
+		Customers customers;
+		int initialCapacity = 3;
+		int minCapacity;
 		
+		//Read customer data from the file
+		Customer[] customerData = Customers.readData(customersDataFile);
+
+		// If the customer data array is not null or empty, add it to the customers object
+		if (customerData != null && customerData.length > 0) {
+			customers = new Customers(customerData);
+			minCapacity = customerData.length + initialCapacity;
+		    customers.ensureCapacity(minCapacity);
+		}else {
+			customers = new Customers(initialCapacity);
+		}
+        
 		boolean readyToExit = false;
-		
+		Scanner scanner = new Scanner(System.in);
 		while(!readyToExit) {
 			System.out.println("-------------------------");
             System.out.println("Java Banking Application");
@@ -22,13 +41,13 @@ public class MainUI {
             System.out.println("1 - Create New Customer Data");
             System.out.println("2 - Assign a Bank Account to a Customer");
             System.out.println("3 - Display balance or interest earned of a Customer");
-            System.out.println("4 - Sort Customer Data");
+            System.out.println("4 - Sort Customer Data ordered by Name");
             System.out.println("5 - Persist Customer Data");
-            System.out.println("6 - Show All Customers");
+            System.out.println("6 - Show All Customers ordered by ID");
             System.out.println("7 - Search Customers by Name");
             System.out.println("8 - Exit");
             System.out.println("9 - Withdraw bank balance by customer ID");
-            System.out.println("9 - Deposit to Customer Bank Account by customer ID");
+            System.out.println("10 - Deposit to Customer Bank Account by customer ID");
             
             String option = scanner.nextLine();
             
@@ -45,11 +64,11 @@ public class MainUI {
             case "3": // Display balance or interest earned of a customer   -- TO BE COMPLETED
             	System.out.println("Display balance or interest earned of a customer ---Under development---Stay tune!");
             	break;
-            case "4": // Sort customer data  -- TO BE COMPLETED
-            	System.out.println("Sort customer data ---Under development---Stay tune!");
+            case "4": // Sort customer data 
+            	customers.sortByName();
             	break;
-            case "5": // Persist Customer Data -- TO BE COMPLETED
-            	System.out.println("Persist Customer Data ---Under development---Stay tune!");
+            case "5": // Persist Customer Data
+            	customers.persistData(customersDataFile);
             	break;
             case "6": // Show all customers            
             	customers.displayCustomers();
@@ -61,6 +80,9 @@ public class MainUI {
             	customers.displayCustomers(matchingCustomers);			
             	break;
             case "8": // Exit
+            	//Persist Customers Data to file    	
+            	customers.persistData(customersDataFile);
+            	// Exit the program
             	System.out.println("Good Bye!");
             	scanner.close();
             	readyToExit = true;
@@ -72,7 +94,7 @@ public class MainUI {
             	int max = min + Customers.getCount();
             	int id = InputUtilities.getInputAsInteger(promptGetId, min, max);
             	
-            	// Get amount to widthdraw
+            	// Get amount to withdraw
             	String promptGetAmount = "Enter Amount to withdrawal : ";
             	double minAmount = 1.00;
             	double maxAmount = 10000;
@@ -85,8 +107,7 @@ public class MainUI {
             default:
             		System.out.println("Option not valid - try again !");
             }
-		}
-		
+		}	
 	}
 
 }

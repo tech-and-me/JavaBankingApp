@@ -1,10 +1,12 @@
 package com.wileyedge.bankaccount;
 
+import java.io.Serializable;
+
 import com.wileyedge.customer.Customer;
 import com.wileyedge.customer.Customers;
 import com.wileyedge.exceptions.InsufficientBalanceException;
 
-public class BankAccount {
+public class BankAccount implements Serializable{
 	private long accntNum;
 	private long bsbCode;
 	private String bankName;

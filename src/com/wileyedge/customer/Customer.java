@@ -1,9 +1,11 @@
 package com.wileyedge.customer;
 
+import java.io.Serializable;
+
 import com.wileyedge.bankaccount.BankAccount;
 import com.wileyedge.utilities.InputUtilities;
 
-public class Customer {
+public class Customer implements Serializable {
 	private int custId;
 	private String custName;
 	private int custAge;
@@ -133,15 +135,15 @@ public class Customer {
 	public String toString() {
 		String bankName = "N/A";
 		String accountNumber = "N/A";
-		if(this.bankAccount == null) {
-			bankName = "N/A";
-			accountNumber = "N/A";
-		}else {
+		double bankBalance = 0.00;
+		if(this.bankAccount != null) {
 			bankName = this.bankAccount.getBankName();
 			accountNumber = String.valueOf(this.bankAccount.getAccntNum());
+			bankBalance = this.bankAccount.getAccntBal();
 		}
 		return "ID: " + this.custId + " | " + "NAME: " + this.custName + " | " 
-				+ "AGE: " + this.custAge 	+ " | " + "MOBILE: " + this.custMobNum + " | " + "Bank Name: " + bankName + " | " + "Bank Account Number: " + accountNumber;
+				+ "AGE: " + this.custAge 	+ " | " + "MOBILE: " + this.custMobNum + " | " + "Bank Name: " + bankName + " | " 
+		+ "Bank Account Number: " + accountNumber + " | " + "Bank Balance: " + bankBalance;
 	}
 	
 	

@@ -1,5 +1,15 @@
 package com.wileyedge.customer;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +19,7 @@ import com.wileyedge.bankaccount.BankAccount;
 import com.wileyedge.utilities.InputUtilities;
 
 
-public class Customers {
+public class Customers implements Serializable{
 	private Customer[] customers;
 	private static int count = 0;
 	
@@ -21,6 +31,10 @@ public class Customers {
 		super();
 		this.customers = new Customer[initialNumOfCustomers];
 	}
+	
+	public Customers(Customer[] customers) {
+        this.customers = customers;
+    }
 	
 	public void addCustomer(Customer customer) {
         // Creating new array double the size
@@ -52,11 +66,17 @@ public class Customers {
 		return count;
 	}
 	
-
     public boolean customerHasNoBankAccount(Customer customer) {
     	return customer.getBankAccount() == null;
     }
     
+    public void ensureCapacity(int minCapacity) {
+        int oldCapacity = customers.length;
+        if (minCapacity > oldCapacity) {
+            int newCapacity = Math.max(minCapacity, oldCapacity * 2);
+            customers = Arrays.copyOf(customers, newCapacity);
+        }
+    }
     
     public void getBankAccountDetails(int customerId) {    	
     	//Get customer account number
@@ -91,8 +111,7 @@ public class Customers {
     	Customer customer = getCustomerById(customerId);
     	
     	//Invoke method to create bank account
-    	this.assignBankAccountForCustomer(customer,accountNum,bsb,bankName,bankBal,openingDate);
-    		
+    	this.assignBankAccountForCustomer(customer,accountNum,bsb,bankName,bankBal,openingDate);		
     }
     
     public void assignBankAccountForCustomer(int customerId) {
@@ -103,15 +122,14 @@ public class Customers {
     	}else if(!customerHasNoBankAccount(customer)) {
     		System.out.println("This customer already has a bank account linked.");
             return;
-    	}
-  	
+    	}	
     	getBankAccountDetails(customerId);
     }
     
     public void assignBankAccountForCustomer(Customer customer,long accntNum, long bsbCode, String accntName, double accntBal, String accntOpeningDate) {
         BankAccount bankAccount = new BankAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
         customer.setCustomerBankAccount(bankAccount);
-        System.out.println("Bank account created successfully!");
+        System.out.println("Bank account assigned to the customer successfully!");
     }
     
     public void withdrawal(int customerId, double amount) {
@@ -124,22 +142,6 @@ public class Customers {
         account.withdraw(amount);
     }
 
-	public void displayCustomers() {
-	    displayCustomers(this.customers);
-	}
-
-	public void displayCustomers(Customer[] customers) {
-	    System.out.println("\n==========Customers List==========");
-	    if(customers.length == 0) {
-	    	System.out.println("No customers to display");
-	    }else {
-	    	for(Customer cust: customers) {
-		        if(cust != null) {
-		            System.out.println(cust);
-		        }
-		    }
-	    }
-	}
 	
 	public Customer[] searchCustomersByName(String name) {
 	    Customer[] matchingCustomers = new Customer[count];
@@ -161,6 +163,103 @@ public class Customers {
 	        }
 	    }
 	    return null;
+	}
+	
+	public void sortByName() {
+	    if (customers == null) {
+	    	System.out.println("No customers to display.");
+	        return;
+	    }
+	    Customer[] sorted = Arrays.copyOf(customers, customers.length);
+	    for (int i = 0; i < sorted.length - 1; i++) {
+	        for (int j = i + 1; j < sorted.length; j++) {
+	            if (sorted[i] != null && sorted[j] != null && sorted[i].getCustName().compareTo(sorted[j].getCustName()) > 0) {
+	                Customer temp = sorted[i];
+	                sorted[i] = sorted[j];
+	                sorted[j] = temp;
+	            }
+	        }
+	    }
+	    for(Customer c:sorted) {
+	    	System.out.println(c);
+	    }
+	}
+	
+	public void displayCustomers() {
+	    displayCustomers(this.customers);
+	}
+
+	public void displayCustomers(Customer[] customers) {
+	    System.out.println("\n==========Customers List==========");
+	    if(customers.length == 0) {
+	    	System.out.println("No customers to display");
+	    }else {
+	    	for(Customer cust: customers) {
+		        if(cust != null) {
+		            System.out.println(cust);
+		        }
+		    }
+	    }
+	}
+
+	public void persistData(File filename) {
+		FileOutputStream fos = null;
+		BufferedOutputStream bos = null;
+		ObjectOutputStream oos = null;
+		try {
+			fos = new FileOutputStream(filename);
+			bos = new BufferedOutputStream(fos);
+			oos = new ObjectOutputStream(bos);
+			oos.writeObject(this.customers);
+			System.out.println("Customer data persisted to file successfully!");	
+		} catch (FileNotFoundException e) {
+			System.out.println("Error file not found: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Error persisting customer data to file: " + e.getMessage());
+		}finally {
+			try {
+				bos.close();
+				oos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
+	public static Customer[] readData(File filename) {
+	    Customer[] customers = null;
+	    FileInputStream fis = null;
+	    BufferedInputStream bis = null;
+	    ObjectInputStream ois = null;
+	    try {
+	        fis = new FileInputStream(filename);
+	        bis = new BufferedInputStream(fis);
+	        ois = new ObjectInputStream(bis);
+	        customers = (Customer[]) ois.readObject();
+	        System.out.println("Customer data read from file successfully!");
+	    } catch (FileNotFoundException e) {
+	        System.out.println("Error file not found: " + e.getMessage());
+	    } catch (IOException e) {
+	        System.out.println("Error reading customer data from file: " + e.getMessage());
+	    } catch (ClassNotFoundException e) {
+	        System.out.println("Error loading Customer class: " + e.getMessage());
+	    } finally {
+	        try {
+	            if (ois != null) {
+	                ois.close();
+	            }
+	            if (bis != null) {
+	                bis.close();
+	            }
+	            if (fis != null) {
+	                fis.close();
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return customers;
 	}
 	
 }
