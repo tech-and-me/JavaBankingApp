@@ -32,6 +32,7 @@ public class MainUI {
 			customers = new Customers(initialCapacity);
 		}
         
+		
 		boolean readyToExit = false;
 		Scanner scanner = new Scanner(System.in);
 		while(!readyToExit) {
@@ -53,7 +54,8 @@ public class MainUI {
             
             switch(option) {
             case "1": // Create New Customer Data
-            	customer.CreateNewCustomerData(customers);
+//            	customer.CreateNewCustomerData(customers);
+            	customers.CreateNewCustomerData();
             	break;
             case "2":// Assign a Bank Account to a Customer
             	System.out.println("Enter customer id you want to assign bank account : ");

@@ -36,24 +36,6 @@ public class Customers implements Serializable{
         this.customers = customers;
         count = customers.length;
     }
-	
-	public void addCustomer(Customer customer) {
-        // Creating new array double the size
-		if(customers.length == count) {
-        	Customer newCustomersList[] = new Customer[2 * count];
-    
-        	//copy all items of original customer list to new customer list
-    		for(int i=0; i<customers.length;i++) {
-    			newCustomersList[i] = customers[i];
-    		}	
-    		//Assigning new customers list to original customers list
-    		customers = newCustomersList;
-        }		
-		// adding new item to the the array
-		customers[count++] = customer;
-		System.out.println("Custmer with Id of " + customer.getCustId() + "has been added to the list successfully.");
-		
-    }
 
 	public Customer[] getCustomers() {
 		return customers;
@@ -78,6 +60,70 @@ public class Customers implements Serializable{
             customers = Arrays.copyOf(customers, newCapacity);
         }
     }
+    
+    public void addCustomer(Customer customer) {
+        // Creating new array double the size
+		if(customers.length == count) {
+        	Customer newCustomersList[] = new Customer[2 * count];
+    
+        	//copy all items of original customer list to new customer list
+    		for(int i=0; i<customers.length;i++) {
+    			newCustomersList[i] = customers[i];
+    		}	
+    		//Assigning new customers list to original customers list
+    		customers = newCustomersList;
+        }		
+		// adding new item to the the array
+		customers[count++] = customer;
+		System.out.println("Custmer with Id of " + customer.getCustId() + "has been added to the list successfully.");		
+    }
+    
+    ////////////////////////////////UNDER DEVELOPEMENT///////////////////////////
+    public Customer CreateNewCustomerData() {	
+		String name;
+		int age = 0;
+		int mobNum = 0;
+		String passportNum;
+		
+		// get customer name
+		String promptGetCustomerInput = "Enter customer name :";
+		int minNameLength = 2;
+		int maxNameLenght = 20;
+		name = InputUtilities.getInputAsString(promptGetCustomerInput, minNameLength, maxNameLenght);
+		
+		//Get customer age
+		String promptGetAgeInput = "Enter customer age : ";
+		int minAge = 18;
+		int maxAge = 100;
+		age = InputUtilities.getInputAsInteger(promptGetAgeInput, minAge, maxAge);
+		
+		//Get customer mobile phone number
+		String promptGetMobInput = "Enter customer mobile number :";
+		int minPhoneNum = 100000000;
+		int maxPhoneNum = 500000000;
+		mobNum = InputUtilities.getInputAsInteger(promptGetMobInput, minPhoneNum, maxPhoneNum);
+		
+		//Get customer passport number
+		String promptGetPassportInput = "Enter customer passport number :";
+		int minPassportNumLength = 5;
+		int maxPassportNumLenght = 15;
+		passportNum = InputUtilities.getInputAsString(promptGetPassportInput, minPassportNumLength, maxPassportNumLenght);
+
+		// Create customer object
+		Customer customer = new Customer(name,age,mobNum,passportNum);
+		
+		// Add customer to customer List
+		this.addCustomer(customer);
+		
+		// Display customer details added
+		System.out.println("Successfully added -- see details below :");
+		System.out.println(customer);
+		
+		// return customer object
+		return customer;
+	}
+    ///////////////////////////////////////////////////////
+    
     
     public void getBankAccountDetails(int customerId) {    	
     	//Get customer account number
@@ -196,7 +242,7 @@ public class Customers implements Serializable{
 
 	public void displayCustomers(Customer[] customers) {
 	    System.out.println("\n==========Customers List==========");
-	    if(customers.length == 0) {
+	    if(customers.length == 0 || customers == null) {
 	    	System.out.println("No customers to display");
 	    }else {
 	    	for(Customer cust: customers) {
@@ -259,8 +305,8 @@ public class Customers implements Serializable{
 	    } catch (IOException e) {
 	        System.out.println("No data to load");
 	    } catch (ClassNotFoundException e) {
-	        System.out.println("Error loading Customer class: " + e.getMessage());
-	    } finally {
+	    	System.out.println("Error - Class not found Exception" + e.getMessage());
+		} finally {
 	        try {
 	            if (ois != null) {
 	                ois.close();
