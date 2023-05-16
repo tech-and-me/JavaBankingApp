@@ -1,6 +1,11 @@
 package com.wileyedge.customer;
 
 import java.io.Serializable;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 import com.wileyedge.bankaccount.BankAccount;
 import com.wileyedge.utilities.InputUtilities;
@@ -11,6 +16,7 @@ public class Customer implements Serializable {
 	private int custAge;
 	private int custMobNum;
 	private String custPassportNum;
+	private String dob;
 	private BankAccount bankAccount;
 	
 	private static int lastCustId = 100;
@@ -19,13 +25,14 @@ public class Customer implements Serializable {
 		super();
 	}
 
-	public Customer(String custName, int custAge, int custMobNum, String custPassportNum) {
+	public Customer(String custName, int custMobNum, String custPassportNum) {
 		super();
 		this.custId = lastCustId;
-		this.custName = custName;
-		this.custAge = custAge;
+		this.custName = custName;	
 		this.custMobNum = custMobNum;
 		this.custPassportNum = custPassportNum;
+		this.setDob();
+		this.setCustAge();
 		
 		lastCustId++;
 	}
@@ -50,8 +57,16 @@ public class Customer implements Serializable {
 		return custAge;
 	}
 
-	public void setCustAge(int custAge) {
-		this.custAge = custAge;
+	public void setCustAge() {
+		// Calculate age based on DOB
+        String[] dateParts = dob.split("/");
+        int day = Integer.parseInt(dateParts[0]);
+        int month = Integer.parseInt(dateParts[1]);
+        int year = Integer.parseInt(dateParts[2]);
+        LocalDate dobDate = LocalDate.of(year, month, day);
+        LocalDate currentDate = LocalDate.now();
+        Period agePeriod = Period.between(dobDate, currentDate);
+        this.custAge = agePeriod.getYears();
 	}
 
 	public int getCustMobNum() {
@@ -78,6 +93,19 @@ public class Customer implements Serializable {
 		Customer.lastCustId = lastCustId;
 	}
 	
+	public void setDob() {
+		//Get Date of Birth
+    	String promptGetOpeningDate = "Enter date of birth DD/MM/YYYY : ";
+    	LocalDate minDate = LocalDate.now().minusYears(100); // customer can be 100 years old from current date.
+    	LocalDate maxDate = LocalDate.now().minusYears(18); // customer must be at least 18 years old as of current date.
+    	
+    	String dob = InputUtilities.getInputAsDate(promptGetOpeningDate,minDate,maxDate);
+		
+		this.dob = dob;
+	  }
+	
+	
+	
 	public BankAccount getBankAccount() {
         return bankAccount;
     }
@@ -85,6 +113,9 @@ public class Customer implements Serializable {
     public void setCustomerBankAccount(BankAccount bankAccount) {
         this.bankAccount = bankAccount;
     }
+    
+    
+    
 		
 	@Override
 	public String toString() {

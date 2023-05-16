@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,7 +79,6 @@ public class Customers implements Serializable{
 		System.out.println("Custmer with Id of " + customer.getCustId() + "has been added to the list successfully.");		
     }
     
-    ////////////////////////////////UNDER DEVELOPEMENT///////////////////////////
     public Customer CreateNewCustomerData() {	
 		String name;
 		int age = 0;
@@ -92,11 +92,11 @@ public class Customers implements Serializable{
 		name = InputUtilities.getInputAsString(promptGetCustomerInput, minNameLength, maxNameLenght);
 		
 		//Get customer age
-		String promptGetAgeInput = "Enter customer age : ";
-		int minAge = 18;
-		int maxAge = 100;
-		age = InputUtilities.getInputAsInteger(promptGetAgeInput, minAge, maxAge);
-		
+//		String promptGetAgeInput = "Enter customer age : ";
+//		int minAge = 18;
+//		int maxAge = 100;
+//		age = InputUtilities.getInputAsInteger(promptGetAgeInput, minAge, maxAge);
+//		
 		//Get customer mobile phone number
 		String promptGetMobInput = "Enter customer mobile number :";
 		int minPhoneNum = 100000000;
@@ -110,7 +110,7 @@ public class Customers implements Serializable{
 		passportNum = InputUtilities.getInputAsString(promptGetPassportInput, minPassportNumLength, maxPassportNumLenght);
 
 		// Create customer object
-		Customer customer = new Customer(name,age,mobNum,passportNum);
+		Customer customer = new Customer(name,mobNum,passportNum);
 		
 		// Add customer to customer List
 		this.addCustomer(customer);
@@ -122,9 +122,7 @@ public class Customers implements Serializable{
 		// return customer object
 		return customer;
 	}
-    ///////////////////////////////////////////////////////
-    
-    
+       
     public void getBankAccountDetails(int customerId) {    	
     	//Get customer account number
     	String promptGetAccntNum = "Enter account number :";
@@ -152,7 +150,9 @@ public class Customers implements Serializable{
     	
     	//Get Opening Date
     	String promptGetOpeningDate = "Enter opening date DD/MM/YYYY : ";
-    	String openingDate = InputUtilities.getInputAsDate(promptGetOpeningDate);
+    	LocalDate maxDate = LocalDate.now();
+        LocalDate minDate = maxDate.minusYears(80);
+    	String openingDate = InputUtilities.getInputAsDate(promptGetOpeningDate,minDate,maxDate);
 
     	//Get customer object from customer id
     	Customer customer = getCustomerById(customerId);

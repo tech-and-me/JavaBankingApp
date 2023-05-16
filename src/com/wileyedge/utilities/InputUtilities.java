@@ -117,7 +117,7 @@ public class InputUtilities {
 	    return input;
 	}
 	
-	public static String getInputAsDate(String prompt) {
+	public static String getInputAsDate(String prompt, LocalDate minDate, LocalDate maxDate) {
 	    boolean validInput = false;
 	    String input = null;
 
@@ -130,11 +130,9 @@ public class InputUtilities {
 	            LocalDate date = LocalDate.parse(input, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
 	            // Check that the date is between today and 80 years ago
-	            LocalDate now = LocalDate.now();
-	            LocalDate minDate = now.minusYears(80);
-	            if (date.isBefore(minDate) || date.isAfter(now)) {
+	            if (date.isBefore(minDate) || date.isAfter(maxDate)) {
 	                System.out.println("Input must be a date between " + minDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
-	                        " and " + now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+	                        " and " + maxDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 	                continue;
 	            }
 
