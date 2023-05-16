@@ -6,12 +6,16 @@ import com.wileyedge.customer.Customer;
 import com.wileyedge.customer.Customers;
 import com.wileyedge.exceptions.InsufficientBalanceException;
 
-public class BankAccount implements Serializable{
+public abstract class BankAccount implements Serializable{
 	private long accntNum;
 	private long bsbCode;
 	private String bankName;
 	private double accntBal;
 	private String accntOpeningDate;
+	
+	public BankAccount() {
+		
+	}
 	
 	public BankAccount(long accntNum, long bsbCode, String accntName, double accntBal, String accntOpeningDate) {
 		super();
@@ -75,6 +79,8 @@ public class BankAccount implements Serializable{
 	        System.out.println("Error occurred while withdrawing from the account. Please try again.");
 	    }
 	}
+	
+	 public abstract double CalculateInterest();
 
 
 	

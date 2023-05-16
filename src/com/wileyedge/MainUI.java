@@ -19,6 +19,7 @@ public class MainUI {
 		Customers customers;
 		int initialCapacity = 3;
 		int minCapacity;
+		int customerId;
 		
 		//Read customer data from the file
 		Customer[] customerData = Customers.readData(customersDataFile);
@@ -54,17 +55,19 @@ public class MainUI {
             
             switch(option) {
             case "1": // Create New Customer Data
-//            	customer.CreateNewCustomerData(customers);
             	customers.CreateNewCustomerData();
             	break;
             case "2":// Assign a Bank Account to a Customer
             	System.out.println("Enter customer id you want to assign bank account : ");
-            	int customerId = scanner.nextInt();
+            	customerId = scanner.nextInt();
             	scanner.nextLine();
             	customers.assignBankAccountForCustomer(customerId);
             	break;
-            case "3": // Display balance or interest earned of a customer   -- TO BE COMPLETED
-            	System.out.println("Display balance or interest earned of a customer ---Under development---Stay tune!");
+            case "3": // Display balance or interest earned of a customer
+            	System.out.println("Enter customer id you want to assign bank account : ");
+            	customerId = scanner.nextInt();
+            	scanner.nextLine();
+            	customers.displayInterstEarnedForCustomer(customerId);
             	break;
             case "4": // Sort customer data 
             	customers.sortByName();

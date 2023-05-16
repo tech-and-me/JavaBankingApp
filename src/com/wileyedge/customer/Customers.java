@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.wileyedge.bankaccount.BankAccount;
+import com.wileyedge.bankaccount.FixedDepositAccount;
+import com.wileyedge.bankaccount.SavingAccount;
+import com.wileyedge.exceptions.InvalidCustomerIdException;
 import com.wileyedge.utilities.InputUtilities;
 
 
@@ -156,9 +159,17 @@ public class Customers implements Serializable{
 
     	//Get customer object from customer id
     	Customer customer = getCustomerById(customerId);
+    	    	
+    	//Get type of bank account
+    	String promptGetAccountType = "Is this a fixed deposit account or saving account ? Type F for fixed or S for Saving : ";
+    	int minChar = 1;
+    	int maxChar = 1;
+    	String accountType = InputUtilities.getInputAsString(promptGetAccountType, minChar, maxChar);
+    	
     	
     	//Invoke method to create bank account
-    	this.assignBankAccountForCustomer(customer,accountNum,bsb,bankName,bankBal,openingDate);		
+    	this.assignBankAccountForCustomer(customer,accountNum,bsb,bankName,bankBal,openingDate,accountType);
+    	
     }
     
     public void assignBankAccountForCustomer(int customerId) {
@@ -173,10 +184,36 @@ public class Customers implements Serializable{
     	getBankAccountDetails(customerId);
     }
     
-    public void assignBankAccountForCustomer(Customer customer,long accntNum, long bsbCode, String accntName, double accntBal, String accntOpeningDate) {
-        BankAccount bankAccount = new BankAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
+    public void assignBankAccountForCustomer(Customer customer,long accntNum, long bsbCode, String accntName, double accntBal, String accntOpeningDate, String accntType) {
+    	BankAccount bankAccount;
+        if (accntType.equalsIgnoreCase("F")) {
+            bankAccount = new FixedDepositAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
+            String promptGetDepositAmount = "Enter deposit amount : ";
+        	double minAccBal = 100.00;
+        	double maxAccBal = 100000.00;
+        	double depositAmount = InputUtilities.getInputAsDouble(promptGetDepositAmount, minAccBal, maxAccBal);
+        	((FixedDepositAccount)bankAccount).setDepositAmount(depositAmount);
+        	
+        	String promptGetTenure= "Enter tenure (in years)  :";
+        	int minTenure = 1;
+        	int maxTenure = 7;
+        	int tenure = InputUtilities.getInputAsInteger(promptGetTenure, minTenure, maxTenure);
+        	((FixedDepositAccount)bankAccount).setTenure(tenure);
+        	
+        } else{
+        	bankAccount = new SavingAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
+        	String promptIsSalaryAccount = "Is this salary account ? Y/N : ";
+        	int minChar = 1;
+        	int maxChar = 1;
+        	String isSalaryAccount = InputUtilities.getInputAsString(promptIsSalaryAccount, minChar, maxChar);
+        	if (isSalaryAccount.equalsIgnoreCase("Y")) {
+                ((SavingAccount) bankAccount).setSalaryAccount(true);
+            } else {
+                ((SavingAccount) bankAccount).setSalaryAccount(false);
+            }
+        } 
         customer.setCustomerBankAccount(bankAccount);
-        System.out.println("Bank account assigned to the customer successfully!");
+        System.out.println("Bank account assigned to customer successfully");
     }
     
     public void withdrawal(int customerId, double amount) {
@@ -205,12 +242,19 @@ public class Customers implements Serializable{
 	}
 	
 	public Customer getCustomerById(int customerId) {
-	    for (Customer customer : customers) {
-	        if (customer != null && customer.getCustId() == customerId) {
-	            return customer;
-	        }
-	    }
-	    return null;
+		try {
+			for (Customer customer : customers) {
+		        if (customer != null && customer.getCustId() == customerId) {
+		            return customer;
+		        }
+			}
+			throw new InvalidCustomerIdException("Customer not found. Please double check customer Id.");
+			
+		}catch(InvalidCustomerIdException e){
+			System.out.println(e.getMessage());
+			return null;
+		}
+	     
 	}
 	
 	public void sortByName() {
@@ -252,6 +296,14 @@ public class Customers implements Serializable{
 		    }
 	    }
 	}
+	
+	public void displayInterstEarnedForCustomer(int customerId){
+		 Customer customer = getCustomerById(customerId);
+		    if (customer == null) {
+		        return;
+		    }
+		    System.out.println("Interest earned for customer ID: " + customer.getCustId() + " is: " + customer.getBankAccount().CalculateInterest() + " dollars.");
+	}
 
 	public void persistData(File filename) {
 		FileOutputStream fos = null;
@@ -275,7 +327,6 @@ public class Customers implements Serializable{
 				e.printStackTrace();
 			}
 		}
-
 	}
 	
 	public static Customer[] readData(File filename) {
