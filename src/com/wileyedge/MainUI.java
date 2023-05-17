@@ -49,7 +49,7 @@ public class MainUI {
             System.out.println("7 - Search Customers by Name");
             System.out.println("8 - Exit");
             System.out.println("9 - Withdraw bank balance by customer ID");
-            System.out.println("10 - Deposit to Customer Bank Account by customer ID");
+//            System.out.println("10 - Deposit to Customer Bank Account by customer ID");
             
             String option = scanner.nextLine();
             
@@ -105,9 +105,9 @@ public class MainUI {
             	double amount = InputUtilities.getInputAsDouble(promptGetAmount, minAmount, maxAmount); 	
             	customers.withdrawal(id, amount);
             	break;
-            case "10": // Deposit
-            	System.out.println("-------Deposit----TO BE COMPLETED----");
-            	break;
+//            case "10": // Deposit
+//            	System.out.println("-------Deposit----TO BE COMPLETED----");
+//            	break;
             default:
             		System.out.println("Option not valid - try again !");
             }

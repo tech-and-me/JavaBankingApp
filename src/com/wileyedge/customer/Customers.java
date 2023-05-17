@@ -19,8 +19,10 @@ import java.util.Scanner;
 import com.wileyedge.bankaccount.BankAccount;
 import com.wileyedge.bankaccount.FixedDepositAccount;
 import com.wileyedge.bankaccount.SavingAccount;
+import com.wileyedge.exceptions.InsufficientBalanceException;
 import com.wileyedge.exceptions.InvalidCustomerIdException;
 import com.wileyedge.utilities.InputUtilities;
+import com.wileyedge.utilities.InputUtilitiesNoLoop;
 
 
 public class Customers implements Serializable{
@@ -165,8 +167,7 @@ public class Customers implements Serializable{
     	int minChar = 1;
     	int maxChar = 1;
     	String accountType = InputUtilities.getInputAsString(promptGetAccountType, minChar, maxChar);
-    	
-    	
+    	 	
     	//Invoke method to create bank account
     	this.assignBankAccountForCustomer(customer,accountNum,bsb,bankName,bankBal,openingDate,accountType);
     	
@@ -186,44 +187,67 @@ public class Customers implements Serializable{
     
     public void assignBankAccountForCustomer(Customer customer,long accntNum, long bsbCode, String accntName, double accntBal, String accntOpeningDate, String accntType) {
     	BankAccount bankAccount;
-        if (accntType.equalsIgnoreCase("F")) {
-            bankAccount = new FixedDepositAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
-            String promptGetDepositAmount = "Enter deposit amount : ";
-        	double minAccBal = 100.00;
-        	double maxAccBal = 100000.00;
-        	double depositAmount = InputUtilities.getInputAsDouble(promptGetDepositAmount, minAccBal, maxAccBal);
-        	((FixedDepositAccount)bankAccount).setDepositAmount(depositAmount);
-        	
-        	String promptGetTenure= "Enter tenure (in years)  :";
-        	int minTenure = 1;
-        	int maxTenure = 7;
-        	int tenure = InputUtilities.getInputAsInteger(promptGetTenure, minTenure, maxTenure);
-        	((FixedDepositAccount)bankAccount).setTenure(tenure);
-        	
-        } else{
-        	bankAccount = new SavingAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
-        	String promptIsSalaryAccount = "Is this salary account ? Y/N : ";
-        	int minChar = 1;
-        	int maxChar = 1;
-        	String isSalaryAccount = InputUtilities.getInputAsString(promptIsSalaryAccount, minChar, maxChar);
-        	if (isSalaryAccount.equalsIgnoreCase("Y")) {
-                ((SavingAccount) bankAccount).setSalaryAccount(true);
-            } else {
-                ((SavingAccount) bankAccount).setSalaryAccount(false);
-            }
-        } 
-        customer.setCustomerBankAccount(bankAccount);
-        System.out.println("Bank account assigned to customer successfully");
+    	try {
+    		  if (accntType.equalsIgnoreCase("F")) {   	            
+    	            String promptGetDepositAmount = "Enter deposit amount : ";
+    	        	double minAccBal = 1000.00;
+    	        	double maxAccBal = 1000000.00;
+    	        	double depositAmount = InputUtilitiesNoLoop.getInputAsDouble(promptGetDepositAmount, minAccBal, maxAccBal);
+   	
+    	        	bankAccount = new FixedDepositAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
+    	        	FixedDepositAccount fixedDepositAccount = (FixedDepositAccount)bankAccount;
+    	        	fixedDepositAccount.setDepositAmount(depositAmount);
+    	        	
+    	        	String promptGetTenure= "Enter tenure (in years)  :";
+    	        	int minTenure = 1;
+    	        	int maxTenure = 7;
+    	        	int tenure = InputUtilities.getInputAsInteger(promptGetTenure, minTenure, maxTenure);
+    	        	((FixedDepositAccount)bankAccount).setTenure(tenure);	        	
+    	        } else{	        	
+    	        	String promptIsSalaryAccount = "Is this salary account ? Y/N : ";
+    	        	int minChar = 1;
+    	        	int maxChar = 1;
+    	        	String isSalaryAccount = InputUtilities.getInputAsString(promptIsSalaryAccount, minChar, maxChar);
+    	        	
+    	        	float minBalSalAccnt = 0;
+    	        	float minBalNonSalAccnt = 100;
+    	        	
+    	        	if (isSalaryAccount.equalsIgnoreCase("Y")) {  	        
+    	        		bankAccount = new SavingAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate); 
+    	                ((SavingAccount) bankAccount).setSalaryAccount(true);
+    	            } else {    	            	
+    	                if(accntBal < minBalNonSalAccnt) {
+    	                	throw new InsufficientBalanceException("Minimum balance required is " + minBalNonSalAccnt + " dollars.");
+    	                }
+    	                bankAccount = new SavingAccount(accntNum, bsbCode, accntName, accntBal, accntOpeningDate);
+    	                ((SavingAccount) bankAccount).setSalaryAccount(false);
+    	                ((SavingAccount) bankAccount).setMinBalance(minBalNonSalAccnt);
+    	            }
+    	        } 
+    		  
+    		  customer.setCustomerBankAccount(bankAccount);
+    	      System.out.println("Bank account assigned to customer successfully");
+    		  
+    	}catch(InsufficientBalanceException e) {
+    		System.out.println(e.getMessage());
+            System.out.println("Failed to assign the account to the customer. Goodbye!");
+    	}catch(Exception e) {
+    		System.out.println("Ooop! something went wrong ! Failed to assign account to customer. Good Bye!");
+    	}
+             
     }
     
     public void withdrawal(int customerId, double amount) {
+    	//Get customer object
         Customer customer = getCustomerById(customerId);
         if (customer == null) {
             System.out.println("Customer with ID " + customerId + " not found.");
             return;
         }
+        
+        //Check type of bank account (Fixed Deposit or Saving)
         BankAccount account = customer.getBankAccount();
-        account.withdraw(amount);
+        double updatedBankBal = account.withdraw(amount);
     }
 
 	public Customer[] searchCustomersByName(String name) {
@@ -257,43 +281,54 @@ public class Customers implements Serializable{
 	     
 	}
 	
-	public void sortByName() {
-	    if (customers == null) {
-	    	System.out.println("No customers to display.");
-	        return;
-	    }
-	    Customer[] sorted = Arrays.copyOf(customers, customers.length);
-	    for (int i = 0; i < sorted.length - 1; i++) {
-	        for (int j = i + 1; j < sorted.length; j++) {
-	            if (sorted[i] != null && sorted[j] != null && sorted[i].getCustName().compareTo(sorted[j].getCustName()) > 0) {
-	                Customer temp = sorted[i];
-	                sorted[i] = sorted[j];
-	                sorted[j] = temp;
-	            }
-	        }
-	    }
-	    for(Customer c:sorted) {
-	    	if(c != null) {
-	    		System.out.println(c);
-	    	}
-	    	
+	public boolean allItemsAreNull(){
+		boolean isAllNull = true;
+		 for (Customer element : this.customers) {
+		        if (element != null) {
+		        	isAllNull = false;
+		        	break;
+		        }
+		    }
+	    return isAllNull;
+	}
+	
+	public void sortByName() {	
+	    if(!allItemsAreNull()) {
+	    	Customer[] sorted = Arrays.copyOf(customers, customers.length);
+	 	    for (int i = 0; i < sorted.length - 1; i++) {
+	 	        for (int j = i + 1; j < sorted.length; j++) {
+	 	            if (sorted[i] != null && sorted[j] != null && sorted[i].getCustName().compareTo(sorted[j].getCustName()) > 0) {
+	 	                Customer temp = sorted[i];
+	 	                sorted[i] = sorted[j];
+	 	                sorted[j] = temp;
+	 	            }
+	 	        }
+	 	    }
+	 	    for(Customer c:sorted) {
+	 	    	if(c != null) {
+	 	    		System.out.println(c);
+	 	    	} 	    	
+	 	    }
+	    }else {
+	    	System.out.println("No customer to display.");
 	    }
 	}
 	
 	public void displayCustomers() {
-	    displayCustomers(this.customers);
+		boolean allNull = allItemsAreNull();	 
+		 if(allNull) {
+			 System.out.println("No customer to display");
+		 }else {
+			 System.out.println("\n==========Customers List==========");
+			 displayCustomers(this.customers);
+		 }		 	 
 	}
 
 	public void displayCustomers(Customer[] customers) {
-	    System.out.println("\n==========Customers List==========");
-	    if(customers.length == 0 || customers == null) {
-	    	System.out.println("No customers to display");
-	    }else {
-	    	for(Customer cust: customers) {
-		        if(cust != null) {
-		            System.out.println(cust);
-		        }
-		    }
+    	for(Customer cust: customers) {
+	        if(cust != null) {
+	            System.out.println(cust);
+	        }
 	    }
 	}
 	
@@ -302,7 +337,7 @@ public class Customers implements Serializable{
 		    if (customer == null) {
 		        return;
 		    }
-		    System.out.println("Interest earned for customer ID: " + customer.getCustId() + " is: " + customer.getBankAccount().CalculateInterest() + " dollars.");
+		    System.out.println("Interest earned for customer ID: " + customer.getCustId() + " is: " + customer.getBankAccount().calculateInterest() + " dollars.");
 	}
 
 	public void persistData(File filename) {

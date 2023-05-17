@@ -66,35 +66,18 @@ public abstract class BankAccount implements Serializable{
 		this.accntOpeningDate = accntOpeningDate;
 	}
 	
-	public void withdraw(double amount){
-	    try {
-	        if (amount > this.accntBal) {
-	            throw new InsufficientBalanceException("Insufficient balance in the account to withdraw.");
-	        }
-	        this.accntBal -= amount;
-	        System.out.println("Your updated bank balance after withdrawal is : "+ this.accntBal);
-	    } catch (InsufficientBalanceException e) {
-	        System.out.println(e.getMessage());
-	    } catch (Exception e) {
-	        System.out.println("Error occurred while withdrawing from the account. Please try again.");
-	    }
-	}
+	public abstract double withdraw(double amount);
 	
-	 public abstract double CalculateInterest();
-
-
+	public abstract double deposit(double amount);
 	
-	
-	
-	
-	
+	public abstract double calculateInterest();
 	
 
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return super.toString();
+		return "BankAccount [accntNum=" + accntNum + ", bsbCode=" + bsbCode + ", bankName=" + bankName + ", accntBal="
+				+ accntBal + ", accntOpeningDate=" + accntOpeningDate + "]";
 	}
 	
 	

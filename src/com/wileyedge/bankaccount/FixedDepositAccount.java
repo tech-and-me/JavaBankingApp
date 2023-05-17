@@ -39,8 +39,20 @@ public class FixedDepositAccount extends BankAccount {
 	}
 
 	@Override
-	public double CalculateInterest() {
+	public double calculateInterest() {
 		return this.getTenure()*this.getDepositAmount()*INTEREST_RATE;	
+	}
+
+	@Override
+	public double withdraw(double amount) {
+		System.out.println("No withdrawal transaction allowed for Fixed Deposit Account.\nYour updated bank balance after this transaction is $ " + this.getAccntBal());
+		return this.getAccntBal();
+	}
+
+	@Override
+	public double deposit(double amount) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 	
